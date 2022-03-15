@@ -244,15 +244,33 @@ public:
 class S15 {
 public:
 	vector<vector<int>> threeSum(vector<int>& nums) {
-
+		vector<vector<int>> ret;
+		if (nums.size() < 3)
+			return ret;
+		auto head = nums.cbegin();
+		auto end = nums.cend() - 1;
+		for (; head + 2 <= end; head = head + 1) {
+			auto i = head + 1;
+			while (i < end)
+			{
+				if (*head + *i + *(end) == 0)
+					ret.push_back({ *head , *i , *(end) });
+				i++;
+			}
+				
+		}
+		return ret;
 	}
 };
 
 int main()
 {
-	vector<string> st = { "aaa","aa","aaa" };
-	S14 s;
-	cout << s.longestCommonPrefix(st);
+	vector<int> st = { -1,0,1 };
+	S15 s;
+	vector<vector<int>> ret = s.threeSum(st);
+	for(int i = 0; i < s.threeSum(st).size(); i++)
+		for(int j = 0; j < s.threeSum(st)[i].size(); j++)
+			cout << s.threeSum(st)[i][j];
 }
 
 
