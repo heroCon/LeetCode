@@ -305,14 +305,139 @@ public:
 
 
 
+class S17 {
+public:
+	vector<string> letterCombinations(string digits) {
+		vector<string> ret;
+		
+		if (digits.empty())
+			return ret;
+
+		vector<string> numLetter = { "abc","def","ghi","jkl","mno","pqrs","tuv","wxyz" };
+		
+		//第一个数：先往vector里依次加字母，判断后面是否有数字
+		//	如果有数字，则将vector中的数据复制该数字对应的字母数size() - 1 份
+		//第二个数：往vector中的所有string追加字母
+		//	如果有数字，则将vector中的数据复制该数字对应的字母数size() - 1 份
+		
+		for (int i = 0; i < digits.size(); i++) {
+			int num = digits[i] - '2';
+			if (i == 0) {
+				for (int j = 0; j < numLetter[num].size(); j++) {
+					string s;
+					s += numLetter[num][j];//等价与string s(1,numLetter[num][j]);
+					ret.push_back(s);
+				}
+			}		
+			else
+			{
+				for (int j = 0, k = 0; j < ret.size(); j++,k++) {
+					string s;
+					int h = ret.size() / numLetter[num].size();
+					s += numLetter[num][k / h];
+					ret[j] += s;
+				}
+			}
+			if (i + 1 < digits.size())
+			{
+				int size = ret.size();
+				int num1 = digits[i + 1] - '2';
+				for(int k = 0; k < numLetter[num1].size()-1;k++)
+					for (int j = 0; j < size; j++) {
+						string s = ret[j];
+						ret.push_back(s);
+					}
+			}
+
+		}
+		return ret;
+	}
+};
+
+//四数之和
+class S18
+{
+public:
+	S18();
+	~S18();
+
+private:
+
+};
+
+
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
+
+struct ListNode {
+	int val;
+	ListNode *next;
+	ListNode() : val(0), next(nullptr) {}
+	ListNode(int x) : val(x), next(nullptr) {}
+	ListNode(int x, ListNode *next) : val(x), next(next) {}
+};
+class S19 {
+public:
+	//这是带有头指针的链表创建，测试使用
+	ListNode *creat(int n) {
+		ListNode *head, *node, *end;//定义头指针，普通节点，尾部节点；
+		head = (ListNode*)malloc(sizeof(ListNode));//分配地址
+		end = head;         //若是空链表则头尾节点一样
+		for (int i = 0; i < n; i++) {
+			node = (ListNode*)malloc(sizeof(ListNode));
+			//scanf("%d", &node->val);
+			node->val = i + 1;
+			end->next = node;
+			end = node;
+		}
+		end->next = NULL;//结束创建
+		return head;
+	}
+
+public:
+	//这是力扣上不带头指针的删去节点
+	ListNode* removeNthFromEnd(ListNode* head, int n) {
+		ListNode* pEnd = head;
+		int i = 0;
+		int count = 1;
+		ListNode* p = head;
+		while (pEnd->next != nullptr) {
+			count++;
+			pEnd = pEnd->next;
+			if (i != n)
+				i++;
+			else
+				p = p->next;
+		}
+		if (n == count) {
+			head = head->next;
+			return head;
+		}
+		ListNode* temp = p->next;
+		if (temp->next != nullptr)
+			p->next = temp->next;
+		else
+			p->next = nullptr;
+		//free(temp);
+		return head;
+	}
+};
+
+
 int main()
 {
-	vector<int> st = { -1,0,1,-2,0,2 };
-	S15 s;
-	vector<vector<int>> ret = s.threeSum(st);
-	for(int i = 0; i < s.threeSum(st).size(); i++)
-		for(int j = 0; j < s.threeSum(st)[i].size(); j++)
-			cout << s.threeSum(st)[i][j] << endl;
+	S19 s;
+	ListNode* shead = s.creat(2);
+	s.removeNthFromEnd(shead,2);
+	return 0;
 }
 
 
