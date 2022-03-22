@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <stack>
 #include <algorithm>
 
 using namespace std;
@@ -384,6 +385,7 @@ struct ListNode {
 	ListNode(int x) : val(x), next(nullptr) {}
 	ListNode(int x, ListNode *next) : val(x), next(next) {}
 };
+
 class S19 {
 public:
 	//这是带有头指针的链表创建，测试使用
@@ -431,12 +433,35 @@ public:
 	}
 };
 
+class S20 {
+public:
+	bool isValid(string s) {
+		if (s.size() % 2 != 0)
+			return false;
+		map<char, char>kuo = { {'(',')'},{'[',']'},{'{','}'} };
+		stack<char> sta;
+		for (int i = 0; i < s.size(); i++) {
+			if (s[i] == '{' || s[i] == '[' || s[i] == '(')
+				sta.push(s[i]);
+			else
+			{
+				if (sta.empty())
+					return false;	//如果栈为空，当前的括号无法匹配
+				if (kuo.find(sta.top())->second == s[i])
+					sta.pop();
+				else
+					return false;
+			}
+		}
+		return sta.empty();
+	}
+};
+
 
 int main()
 {
-	S19 s;
-	ListNode* shead = s.creat(2);
-	s.removeNthFromEnd(shead,2);
+	S20 s;
+	cout << s.isValid("(([{]}))");
 	return 0;
 }
 
