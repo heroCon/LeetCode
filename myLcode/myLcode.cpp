@@ -3,6 +3,8 @@
 
 #include <iostream>
 #include <string>
+#include <set>
+#include <unordered_set>
 #include <vector>
 #include <map>
 #include <stack>
@@ -186,8 +188,8 @@ public:
 	int romanToInt(string s) {
 		int count = 0;
 		map<char, int> m = { {'I',1},{'V',5},{'X',10},{'L',50},{'C',100},{'D',500},{'M',1000} };
-		for (int i = 0; i < s.size(); i++) {
-			if(i + 1 < s.size() && m.at(s[i]) < m.at(s[i + 1]))
+		for (size_t i = 0; i < s.size(); i++) {
+			if(size_t(i + 1) < s.size() && m.at(s[i]) < m.at(s[i + 1]))
 				count -= m.at(s[i]);
 			else
 				count += m.at(s[i]);
@@ -222,7 +224,7 @@ public:
 			return "";
 		if (strs.size() == 1)
 			return strs[0];
-		for (int i = 1; i < strs.size(); ++i) {
+		for (size_t i = 1; i < strs.size(); ++i) {
 			if (strs[i] == "")
 				return "";
 			int min = (prefix.size() < strs[i].size() ? prefix.size() : strs[i].size());
@@ -321,10 +323,10 @@ public:
 		//第二个数：往vector中的所有string追加字母
 		//	如果有数字，则将vector中的数据复制该数字对应的字母数size() - 1 份
 		
-		for (int i = 0; i < digits.size(); i++) {
+		for (size_t i = 0; i < digits.size(); i++) {
 			int num = digits[i] - '2';
 			if (i == 0) {
-				for (int j = 0; j < numLetter[num].size(); j++) {
+				for (size_t j = 0; j < numLetter[num].size(); j++) {
 					string s;
 					s += numLetter[num][j];//等价与string s(1,numLetter[num][j]);
 					ret.push_back(s);
@@ -332,18 +334,18 @@ public:
 			}		
 			else
 			{
-				for (int j = 0, k = 0; j < ret.size(); j++,k++) {
+				for (size_t j = 0, k = 0; j < ret.size(); j++,k++) {
 					string s;
 					int h = ret.size() / numLetter[num].size();
 					s += numLetter[num][k / h];
 					ret[j] += s;
 				}
 			}
-			if (i + 1 < digits.size())
+			if (size_t(i + 1) < digits.size())
 			{
 				int size = ret.size();
 				int num1 = digits[i + 1] - '2';
-				for(int k = 0; k < numLetter[num1].size()-1;k++)
+				for(size_t k = 0; k < numLetter[num1].size()-1;k++)
 					for (int j = 0; j < size; j++) {
 						string s = ret[j];
 						ret.push_back(s);
@@ -403,9 +405,25 @@ public:
 		end->next = NULL;//结束创建
 		return head;
 	}
+	ListNode *creatNoHead(int n) {
+		if (n == 0)
+			return nullptr;
+		ListNode *head, *node, *end;//定义头指针，普通节点，尾部节点；
+		head = (ListNode*)malloc(sizeof(ListNode));//分配地址
+		end = head;
+		for (int i = 1; i < n; i++) {
+			node = (ListNode*)malloc(sizeof(ListNode));
+			//scanf("%d", &node->val);
+			node->val = i;
+			end->next = node;
+			end = node;
+		}
+		end->next = NULL;//结束创建
+		return head;
+	}
 
 public:
-	//这是力扣上不带头指针的删去节点
+	//这是不带头指针的删去节点
 	ListNode* removeNthFromEnd(ListNode* head, int n) {
 		ListNode* pEnd = head;
 		int i = 0;
@@ -435,12 +453,13 @@ public:
 
 class S20 {
 public:
+	//采用栈
 	bool isValid(string s) {
 		if (s.size() % 2 != 0)
 			return false;
 		map<char, char>kuo = { {'(',')'},{'[',']'},{'{','}'} };
 		stack<char> sta;
-		for (int i = 0; i < s.size(); i++) {
+		for (size_t i = 0; i < s.size(); i++) {
 			if (s[i] == '{' || s[i] == '[' || s[i] == '(')
 				sta.push(s[i]);
 			else
@@ -455,13 +474,594 @@ public:
 		}
 		return sta.empty();
 	}
+	//一对符号时可以不用栈
+	/*bool isValid1(string s) {
+		if (s.size() % 2 != 0)
+			return false;
+		map<char, float>kuo = { {'(',-1.1},{'[',-2.2},{'{',-3.3},{')',1.1},{']',2.2},{'}',3.3} };
+		float sum = 0;
+		for (int i = 0; i < s.size(); i++) {
+			sum += kuo.find(s[i])->second;
+			if (sum > 0)
+				return false;
+		}
+		return true;
+	}*/
+};
+
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
+//同S19的链表
+class S21 {
+public:
+	ListNode *creatNoHead(int n) {
+		if (n == 0)
+			return nullptr;
+		ListNode *head, *node, *end;//定义头指针，普通节点，尾部节点；
+		head = (ListNode*)malloc(sizeof(ListNode));//分配地址
+		head->val = 0;
+		end = head;
+		for (int i = 1; i < n; i++) {
+			node = (ListNode*)malloc(sizeof(ListNode));
+			//scanf("%d", &node->val);
+			node->val = i;
+			end->next = node;
+			end = node;
+		}
+		end->next = NULL;//结束创建
+		return head;
+	}
+	ListNode *creatNoHead2(int n) {
+		if (n == 0)
+			return nullptr;
+		ListNode *head, *node, *end;//定义头指针，普通节点，尾部节点；
+		head = (ListNode*)malloc(sizeof(ListNode));//分配地址
+		head->val = 0;
+		end = head;
+		for (int i = 1; i < n; i++) {
+			node = (ListNode*)malloc(sizeof(ListNode));
+			//scanf("%d", &node->val);
+			node->val = i * 2;
+			end->next = node;
+			end = node;
+		}
+		end->next = NULL;//结束创建
+		return head;
+	}
+
+	ListNode* mergeTwoLists(ListNode* list1, ListNode* list2) {
+		ListNode* p;
+		if (list1 == nullptr)
+			return list2;
+		if (list2 == nullptr)
+			return list1;
+		if (list1->val < list2->val)
+		{
+			p = list1;
+			list1 = list1->next;
+		}
+		else
+		{
+			p = list2;
+			list2 = list2->next;
+		}
+		ListNode* head = p;
+
+		while (list1 != nullptr && list2 != nullptr) {
+			if (list1->val < list2->val) {
+				p->next = list1;
+				p = p->next;
+				list1 = list1->next;
+			}
+			else {
+				p->next = list2;
+				p = p->next;
+				list2 = list2->next;
+			}
+		}
+		if (list1 != nullptr)
+			p->next = list1;
+		if (list2 != nullptr)
+			p->next = list2;
+		return head;
+	}
+};
+
+//
+class S22 {
+public:
+	//穷举几乎所有排列组合，然后选出符合条件的
+	void perm(string str, int low, int high,vector<string> &vect) {
+		if (low == high) {   //当low==high时,此时为一个序列
+			int sum = 0;
+			for (size_t i = 0; i < str.size(); i++)
+			{
+				if (str[i] == '(')
+					sum += -1;
+				else
+					sum += 1;
+				if (sum > 0)
+					break;
+			}
+			if (sum == 0)
+				vect.push_back(str);
+		}
+		else {
+			str.replace(low, 1, "(");
+			perm(str, low + 1, high,vect); 
+			str.replace(low, 1, ")");
+			for (int i = 0,sum = 0; i < low+1; i++)
+			{
+				if (str[i] == '(')
+					sum += -1;
+				else
+					sum += 1;
+				if (sum > 0)
+					break;
+			}
+			perm(str, low + 1, high,vect);
+		}
+	}
+	vector<string> generateParenthesis(int n) {
+		string str(n * 2, '(');
+		vector<string> vec;
+		perm(str, 1, n * 2,vec);
+		return vec;
+	}
 };
 
 
+class S23 {		//合并k个有序链表
+public:
+	ListNode* mergeTwoLists(ListNode* list1, ListNode* list2) {
+		ListNode* p;
+		if (list1 == nullptr)
+			return list2;
+		if (list2 == nullptr)
+			return list1;
+		if (list1->val < list2->val)
+		{
+			p = list1;
+			list1 = list1->next;
+		}
+		else
+		{
+			p = list2;
+			list2 = list2->next;
+		}
+		ListNode* head = p;
+
+		while (list1 != nullptr && list2 != nullptr) {
+			if (list1->val < list2->val) {
+				p->next = list1;
+				p = p->next;
+				list1 = list1->next;
+			}
+			else {
+				p->next = list2;
+				p = p->next;
+				list2 = list2->next;
+			}
+		}
+		if (list1 != nullptr)
+			p->next = list1;
+		if (list2 != nullptr)
+			p->next = list2;
+		return head;
+	}
+
+	ListNode* mergeKLists(vector<ListNode*>& lists) {
+		if (lists.empty())
+			return nullptr;
+		if (lists.size() == 1)
+			return lists.at(0);
+		ListNode* head = lists.at(0);
+		for (size_t i = 1; i < lists.size(); i++) {
+			head = mergeTwoLists(head,lists[i]);
+		}
+		return head;
+	}
+};
+
+class S24 {		//交换链表中相邻的两个节点
+public:
+	ListNode* swapPairs(ListNode* head) {
+		if (head == nullptr)
+			return head;
+		ListNode* temp = nullptr, *p = head;
+		bool flag = true;
+		if (p->next != nullptr)
+			head = head->next;
+		while (p->next != nullptr) {
+			if(temp)
+				temp->next = p->next;
+			temp = p->next;
+			p->next = p->next->next;
+			temp->next = p;
+			
+			temp = p;//记录前一个位置
+			p = p->next;
+			if (p == nullptr)
+				break;
+		}
+		return head;
+	}
+};
+
+class S25 {
+public:
+	pair<ListNode*, ListNode*> myReverse(ListNode* head, ListNode* tail) {
+		ListNode* prev = tail->next;
+		ListNode* p = head;
+		while (prev != tail) {
+			ListNode* nex = p->next;
+			p->next = prev;
+			prev = p;
+			p = nex;
+			//第一轮循环后：p指向头，head是尾，prev是尾
+			//第二轮循环后：p指向头，prev是倒数第二个
+		}
+		return { tail, head };
+	}
+
+	ListNode* reverseKGroup(ListNode* head, int k) {
+		ListNode* hair = new ListNode(0);
+		hair->next = head;
+		ListNode* pre = hair;
+
+		while (head) {
+			ListNode* tail = pre;
+			// 查看剩余部分长度是否大于等于 k
+			for (int i = 0; i < k; ++i) {
+				tail = tail->next;
+				if (!tail) {
+					return hair->next;
+				}
+			}
+			ListNode* nex = tail->next;
+			// 这里是 C++17 的写法，也可以写成
+			// pair<ListNode*, ListNode*> result = myReverse(head, tail);
+			// head = result.first;
+			// tail = result.second;
+			tie(head, tail) = myReverse(head, tail);
+			// 把子链表重新接回原链表
+			pre->next = head;
+			tail->next = nex;
+			pre = tail;
+			head = tail->next;
+		}
+		return hair->next;
+	}
+
+	pair<ListNode*, ListNode*> myReverse1(ListNode* head, ListNode* tail) {
+		ListNode* t = tail->next;
+		ListNode* h = head;
+		while (t != tail) {
+			ListNode* p = h->next;
+			h->next = t;
+			tail->next = h;
+			t = h;
+			h = p;
+		}
+		return {tail,head};
+	}
+};
+
+
+class S26 {
+public:
+	int removeDuplicates(vector<int>& nums) {
+		if (nums.size() < 2)
+			return nums.size();
+		auto it = nums.begin();
+		int temp = *it;
+		it++;
+		while (it != nums.end()) {
+			if (*it == temp) {
+				it = nums.erase(it);
+				continue;
+			}
+			temp = *it;
+			it++;
+		}
+		return nums.size();
+	}
+	//官方解法，不需要真的删除
+	//int removeDuplicates(vector<int>& nums) {
+	//	int n = nums.size();
+	//	if (n == 0) {
+	//		return 0;
+	//	}
+	//	int fast = 1, slow = 1;
+	//	while (fast < n) {
+	//		if (nums[fast] != nums[fast - 1]) {
+	//			nums[slow] = nums[fast];
+	//			++slow;
+	//		}
+	//		++fast;
+	//	}
+	//	return slow;
+	//}
+};
+
+class S27 {
+public:
+	int removeElement(vector<int>& nums, int val) {
+		int n = nums.size();
+		if (n == 0)
+			return 0;
+		int fast = 0, slow = 0;
+		while (fast < n)
+		{
+			if (nums[fast] != val)
+			{
+				nums[slow] = nums[fast];
+				slow++;
+			}
+			fast++;
+		}
+		return slow;
+	}
+	//方法2
+	int removeElement1(vector<int>& nums, int val) {
+		int left = 0, right = nums.size();
+		while (left < right) {
+			if (nums[left] == val) {
+				nums[left] = nums[right - 1];
+				right--;
+			}
+			else {
+				left++;
+			}
+		}
+		return left;
+	}
+};
+
+class S28 {
+public:
+	int strStr(string haystack, string needle) {
+		int sLen = haystack.size();
+		int pLen = needle.size();
+
+		int i = 0;
+		int j = 0;
+		while (i < sLen && j < pLen)
+		{
+			if (haystack[i] == needle[j])
+			{
+				//①如果当前字符匹配成功（即S[i] == P[j]），则i++，j++    
+				i++;
+				j++;
+			}
+			else
+			{
+				//②如果失配（即S[i]! = P[j]），令i = i - (j - 1)，j = 0    
+				i = i - j + 1;
+				j = 0;
+			}
+		}
+		//匹配成功，返回模式串p在文本串s中的位置，否则返回-1
+		if (j == pLen)
+			return i - j;
+		else
+			return -1;
+	}
+};
+
+class S29 {
+public:
+	int divide(int dividend, int divisor) {
+
+	}
+	//class Solution {
+	//public:
+	//	int divide(int dividend, int divisor) {
+	//		// 考虑被除数为最小值的情况
+	//		if (dividend == INT_MIN) {
+	//			if (divisor == 1) {
+	//				return INT_MIN;
+	//			}
+	//			if (divisor == -1) {
+	//				return INT_MAX;
+	//			}
+	//		}
+	//		// 考虑除数为最小值的情况
+	//		if (divisor == INT_MIN) {
+	//			return dividend == INT_MIN ? 1 : 0;
+	//		}
+	//		// 考虑被除数为 0 的情况
+	//		if (dividend == 0) {
+	//			return 0;
+	//		}
+
+	//		// 一般情况，使用二分查找
+	//		// 将所有的正数取相反数，这样就只需要考虑一种情况
+	//		bool rev = false;
+	//		if (dividend > 0) {
+	//			dividend = -dividend;
+	//			rev = !rev;
+	//		}
+	//		if (divisor > 0) {
+	//			divisor = -divisor;
+	//			rev = !rev;
+	//		}
+
+	//		// 快速乘
+	//		auto quickAdd = [](int y, int z, int x) {
+	//			// x 和 y 是负数，z 是正数
+	//			// 需要判断 z * y >= x 是否成立
+	//			int result = 0, add = y;
+	//			while (z) {
+	//				if (z & 1) {
+	//					// 需要保证 result + add >= x
+	//					if (result < x - add) {
+	//						return false;
+	//					}
+	//					result += add;
+	//				}
+	//				if (z != 1) {
+	//					// 需要保证 add + add >= x
+	//					if (add < x - add) {
+	//						return false;
+	//					}
+	//					add += add;
+	//				}
+	//				// 不能使用除法
+	//				z >>= 1;
+	//			}
+	//			return true;
+	//		};
+
+	//		int left = 1, right = INT_MAX, ans = 0;
+	//		while (left <= right) {
+	//			// 注意溢出，并且不能使用除法
+	//			int mid = left + ((right - left) >> 1);
+	//			bool check = quickAdd(divisor, mid, dividend);
+	//			if (check) {
+	//				ans = mid;
+	//				// 注意溢出
+	//				if (mid == INT_MAX) {
+	//					break;
+	//				}
+	//				left = mid + 1;
+	//			}
+	//			else {
+	//				right = mid - 1;
+	//			}
+	//		}
+
+	//		return rev ? -ans : ans;
+	//	}
+	//};
+
+};
+
+//未完成
+class S30 {
+public:
+	vector<string> sortStr(vector<string>& words) {
+		for(int j = 0; j < words.size(); j++)
+			for (int i = 1; i < words.size()-j; i++) {
+				int x = words[i - 1].compare(words[i]);
+				if (words[i - 1].compare(words[i]) > 0) {
+					string temp = words[i];
+					words[i] = words[i - 1];
+					words[i - 1] = temp;
+				}
+			}
+		return words;
+	}
+	vector<int> findSubstring(string s, vector<string>& words) {
+		words = sortStr(words);
+		vector<int> ret;	
+		string str;
+		for (int i = 0; i < words.size(); i++)
+			str += words[i];
+		unordered_set<string> setStr;
+		setStr.insert(str);
+		while (next_permutation(words.begin(), words.end()))
+		{
+			string str;
+			for (int i = 0; i < words.size(); i++)
+				str += words[i];
+			setStr.insert(str);
+		}
+		for (int i = 0; i < s.size() - words[0].size(); i++) {
+			string str = s.substr(i, words[0].size());
+
+		}
+		return ret;
+	}
+	int strStr(string haystack, string needle) {
+		int sLen = haystack.size();
+		int pLen = needle.size();
+		int i = 0;
+		int j = 0;
+		while (i < sLen && j < pLen)
+		{
+			if (haystack[i] == needle[j]){  
+				i++;
+				j++;
+			}
+			else{ 
+				i = i - j + 1;
+				j = 0;
+			}
+		}
+		if (j == pLen)
+			return i - j;
+		else
+			return -1;
+	}
+};
+
+class S31 {
+public:
+	void nextPermutation(vector<int>& nums) {
+		//调用泛型算法
+// 		if(!next_permutation(nums.begin(), nums.end()))
+// 			sort(nums.begin(), nums.end());
+// 		return;
+		//字典排列：
+		//一找：从后往前找nums[i-1]<nums[i]
+		//二找：从i开始到最后，找大于nums[i-1]的最小值num[min]
+		//三交换：交换nums[i]，nums[min]
+		//四翻转：从i开始到最后翻转
+		for (int i = nums.size() - 1; i > 0; i--) {
+			if (nums[i - 1] < nums[i]) {	//1
+				int min = i;
+				for (int j = i; j < nums.size(); j++) {
+					if (nums[j] > nums[i - 1]&&nums[j] <= nums[min]) {
+						min = j;	//2
+					}
+				}
+				int t = nums[i - 1];	//3
+				nums[i - 1] = nums[min];
+				nums[min] = t;
+				//sort(nums.begin() + i, nums.end(), greater<int>());
+				//4
+				for (int start = i, end = nums.size() - 1; start < end; start++, end--) {
+					int x = nums[start];
+					nums[start] = nums[end];
+					nums[end] = x;
+				}
+				return;
+			}				
+		}
+		sort(nums.begin(), nums.end());	
+	}
+
+	//题解
+// 	void nextPermutation(vector<int>& nums) {
+// 		int i = nums.size() - 2;
+// 		while (i >= 0 && nums[i] >= nums[i + 1]) {
+// 			i--;
+// 		}
+// 		if (i >= 0) {
+// 			int j = nums.size() - 1;
+// 			while (j >= 0 && nums[i] >= nums[j]) {
+// 				j--;
+// 			}
+// 			swap(nums[i], nums[j]);
+// 		}
+// 		reverse(nums.begin() + i + 1, nums.end());
+// 	}
+};
+
 int main()
 {
-	S20 s;
-	cout << s.isValid("(([{]}))");
+	S31 S;
+	vector<int> a = { 2,3,1,3,3 };
+	S.nextPermutation(a);
 	return 0;
 }
 
